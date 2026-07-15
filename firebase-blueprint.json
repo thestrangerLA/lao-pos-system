@@ -1,0 +1,159 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Store items for sale",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Product name" },
+        "sellingPrice": { "type": "number", "description": "Retail price in Kip" },
+        "costPrice": { "type": "number", "description": "Cost price in Kip" },
+        "costPriceBaht": { "type": "number", "description": "Cost price in Bhat" },
+        "wholesalePrice": { "type": "number", "description": "Wholesale price in Kip" },
+        "category": { "type": "string", "description": "Product category" },
+        "currentStock": { "type": "number", "description": "Current stock quantity" },
+        "image": { "type": "string", "description": "Optional image URL" }
+      },
+      "required": ["name", "sellingPrice", "costPrice", "category", "currentStock"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "A transaction record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "timestamp": { "type": "number" },
+        "subtotal": { "type": "number" },
+        "tax": { "type": "number" },
+        "discount": { "type": "number" },
+        "total": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["cash", "card", "qr"] },
+        "items": { "type": "array" }
+      },
+      "required": ["id", "timestamp", "subtotal", "total", "paymentMethod", "items"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Income and expense records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["income", "expense"] },
+        "date": { "type": "string" },
+        "amount": { "type": "number" },
+        "category": { "type": "string" },
+        "note": { "type": "string" },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["id", "type", "date", "amount", "timestamp"]
+    },
+    "TransportEntry": {
+      "title": "Transport Entry",
+      "description": "Records for transport and COD services",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["ANS", "HAL", "MX", "COD"] },
+        "detail": { "type": "string" },
+        "cost": { "type": "number" },
+        "quantity": { "type": "number" },
+        "amount": { "type": "number" },
+        "finished": { "type": "boolean" },
+        "date": { "type": "number", "description": "Timestamp" }
+      },
+      "required": ["id", "type", "date", "finished"]
+    },
+    "Config": {
+      "title": "Config",
+      "description": "Global application configuration",
+      "type": "object",
+      "properties": {
+        "bankTransfer": { "type": "number" },
+        "initialCapital": { "type": "number" },
+        "receivables": { "type": "number" },
+        "receivablesMedical": { "type": "number" },
+        "shippingOwed": { "type": "number" },
+        "circulatingMoney": { "type": "number" }
+      }
+    },
+    "CashCalculatorState": {
+      "title": "Cash Calculator State",
+      "description": "State for the cash calculator",
+      "type": "object",
+      "properties": {
+        "counts": { "type": "object" }
+      }
+    },
+    "Debtor": {
+      "title": "Debtor",
+      "description": "Records for debtors and creditors",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["debtor", "creditor"] },
+        "amount": { "type": "number" },
+        "description": { "type": "string" },
+        "date": { "type": "object" },
+        "isPaid": { "type": "boolean" },
+        "createdAt": { "type": "object" }
+      },
+      "required": ["type", "amount", "description", "date", "isPaid"]
+    },
+    "MedicineDebtor": {
+      "title": "Medicine Debtor",
+      "description": "Records for drug/medicine debtors",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderNo": { "type": "number" },
+        "name": { "type": "string" },
+        "note": { "type": "string" },
+        "cost": { "type": "number" },
+        "sellingPrice": { "type": "number" },
+        "isPaid": { "type": "boolean" },
+        "date": { "type": "string" },
+        "month": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["orderNo", "name", "cost", "sellingPrice", "isPaid", "date", "month"]
+    }
+  },
+  "firestore": {
+    "stockItems": {
+      "schema": "Product",
+      "description": "Inventory collection"
+    },
+    "applianceStockItems": {
+      "schema": "Product",
+      "description": "Appliance stock items inventory collection"
+    },
+    "sales": {
+      "schema": "Sale",
+      "description": "Sales history collection"
+    },
+    "config": {
+      "schema": "Config",
+      "description": "Application settings"
+    },
+    "cashCalculatorState": {
+      "schema": "CashCalculatorState",
+      "description": "State for the cash calculator table"
+    },
+    "transportEntries": {
+      "schema": "TransportEntry",
+      "description": "Transport and COD records"
+    },
+    "transactions": {
+      "schema": "Transaction",
+      "description": "Accounting transactions"
+    },
+    "debtorCreditorEntries": {
+      "schema": "Debtor",
+      "description": "Collection for debtors and creditors"
+    },
+    "medicineDebtors": {
+      "schema": "MedicineDebtor",
+      "description": "Collection for drug/medicine debtors"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "projectId": "kaset-stock-manager",
+  "appId": "1:772228625471:web:c434c91b0de9e80702748a",
+  "apiKey": "AIzaSyD2gddtD5LaaPrqNbC5db5NAJVsmEzWvFg",
+  "authDomain": "kaset-stock-manager.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "kaset-stock-manager.firebasestorage.app",
+  "messagingSenderId": "772228625471",
+  "measurementId": ""
+}

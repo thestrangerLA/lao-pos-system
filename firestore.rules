@@ -1,0 +1,137 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global Helpers
+    function isSignedIn() {
+      return true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- stockItems Collection ---
+    match /stockItems/{productId} {
+      function isValidProduct(data) {
+        return data.keys().hasAll(['name', 'sellingPrice', 'costPrice', 'category', 'currentStock']) &&
+               data.name is string && data.name.size() <= 200 &&
+               data.sellingPrice is number && data.sellingPrice >= 0 &&
+               data.costPrice is number && data.costPrice >= 0 &&
+               data.category is string && data.category.size() <= 50 &&
+               data.currentStock is number &&
+               (!('costPriceBaht' in data) || (data.costPriceBaht is number && data.costPriceBaht >= 0)) &&
+               (!('wholesalePrice' in data) || (data.wholesalePrice is number && data.wholesalePrice >= 0)) &&
+               (!('image' in data) || (data.image is string && data.image.size() <= 800000));
+      }
+
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(productId) && isValidProduct(incoming()) && incoming().keys().size() <= 9;
+      allow update: if isSignedIn() && isValidProduct(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasAny(['name', 'sellingPrice', 'costPrice', 'costPriceBaht', 'wholesalePrice', 'category', 'currentStock', 'image'])
+      );
+      allow delete: if isSignedIn();
+    }
+
+    // --- applianceStockItems Collection ---
+    match /applianceStockItems/{productId} {
+      function isValidProduct(data) {
+        return data.keys().hasAll(['name', 'sellingPrice', 'costPrice', 'category', 'currentStock']) &&
+               data.name is string && data.name.size() <= 200 &&
+               data.sellingPrice is number && data.sellingPrice >= 0 &&
+               data.costPrice is number && data.costPrice >= 0 &&
+               data.category is string && data.category.size() <= 50 &&
+               data.currentStock is number &&
+               (!('costPriceBaht' in data) || (data.costPriceBaht is number && data.costPriceBaht >= 0)) &&
+               (!('wholesalePrice' in data) || (data.wholesalePrice is number && data.wholesalePrice >= 0)) &&
+               (!('image' in data) || (data.image is string && data.image.size() <= 800000));
+      }
+
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(productId) && isValidProduct(incoming()) && incoming().keys().size() <= 9;
+      allow update: if isSignedIn() && isValidProduct(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasAny(['name', 'sellingPrice', 'costPrice', 'costPriceBaht', 'wholesalePrice', 'category', 'currentStock', 'image'])
+      );
+      allow delete: if isSignedIn();
+    }
+
+    // --- Sales Collection ---
+    match /sales/{saleId} {
+      function isValidSale(data) {
+        return data.keys().hasAll(['id', 'timestamp', 'items', 'subtotal', 'tax', 'discount', 'total', 'paymentMethod']) &&
+               data.id is string && data.id.size() <= 100 &&
+               data.timestamp is number &&
+               data.items is list && data.items.size() > 0 &&
+               data.subtotal is number && data.subtotal >= 0 &&
+               data.tax is number && data.tax >= 0 &&
+               data.discount is number && data.discount >= 0 &&
+               data.total is number && data.total >= 0 &&
+               data.total == (data.subtotal - data.discount) &&
+               data.paymentMethod in ['cash', 'card', 'qr'];
+      }
+
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(saleId) && isValidSale(incoming()) && incoming().keys().size() == 8;
+      allow update: if isSignedIn() && isValidSale(incoming()) && incoming().diff(existing()).affectedKeys().hasAny(['items', 'subtotal', 'total', 'discount', 'paymentMethod']);
+      allow delete: if isSignedIn();
+    }
+
+    // --- Transactions Collection ---
+    match /transactions/{transactionId} {
+      function isValidTransaction(data) {
+        return data.keys().hasAll(['id', 'type', 'date', 'amount', 'timestamp']) &&
+               data.id is string && data.id.size() <= 100 &&
+               data.type in ['income', 'expense'] &&
+               data.date is string && data.date.size() <= 20 &&
+               data.amount is number && data.amount >= 0 &&
+               (!('category' in data) || (data.category is string && data.category.size() <= 100)) &&
+               (!('note' in data) || (data.note is string && data.note.size() <= 1000)) &&
+               data.timestamp is number;
+      }
+
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(transactionId) && isValidTransaction(incoming());
+      allow update: if isSignedIn() && isValidTransaction(incoming());
+      allow delete: if isSignedIn();
+    }
+
+    // --- Config Collection ---
+    match /config/{configId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    // --- Cash Calculator State Collection ---
+    match /cashCalculatorState/{stateId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    // --- Transport Entries Collection ---
+    match /transportEntries/{entryId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // --- Debtors Collection ---
+    match /debtorCreditorEntries/{entryId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // --- Medicine Debtors Collection ---
+    match /medicineDebtors/{entryId} {
+      allow read, write: if isSignedIn();
+    }
+  }
+}
