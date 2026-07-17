@@ -4002,7 +4002,7 @@ export default function App() {
                                                       <td className="px-4 py-2">
                                                         <div className="flex items-center gap-2">
                                                           {(() => {
-                                                            const selectedProduct = products.find(p => p.id === entry.productId);
+                                                            const selectedProduct = currentShop === 'sports' ? products.find(p => p.id === entry.productId) : null;
                                                             return selectedProduct?.image ? (
                                                               <div 
                                                                 className="w-8 h-8 rounded-lg overflow-hidden shrink-0 bg-black/20 border border-white/10 cursor-pointer hover:scale-105 transition-transform"
@@ -4026,7 +4026,7 @@ export default function App() {
                                                               className="w-full bg-transparent border-none text-xs font-bold focus:ring-0 p-0 text-white"
                                                               placeholder="ລາຍລະອຽດ..."
                                                             />
-                                                            {products.length > 0 && (
+                                                            {currentShop === 'sports' && products.length > 0 && (
                                                               <select 
                                                                 value={entry.productId || ""}
                                                                 onChange={(e) => {
@@ -5467,7 +5467,7 @@ export default function App() {
                         >
                           <div className="col-span-5 flex items-center gap-3">
                             {(() => {
-                              const selectedProduct = products.find(p => p.id === item.productId);
+                              const selectedProduct = currentShop === 'sports' ? products.find(p => p.id === item.productId) : null;
                               return selectedProduct?.image ? (
                                 <div 
                                   className="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-black/20 border border-white/10 cursor-pointer hover:scale-105 transition-transform"
@@ -5495,7 +5495,7 @@ export default function App() {
                                 onChange={(e) => handleUpdateTransportLine(item.id, { detail: e.target.value })}
                                 className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-white font-bold truncate"
                               />
-                              {products.length > 0 && (
+                              {currentShop === 'sports' && products.length > 0 && (
                                 <select 
                                   value={item.productId || ""}
                                   onChange={(e) => {
